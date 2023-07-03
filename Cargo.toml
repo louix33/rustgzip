@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 bitstream-io = "1.6.0"
+lazy_static = "1.4.0"
