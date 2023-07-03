@@ -74,7 +74,7 @@ impl HuffmanDict {
         Ok(code_dict)
     }
 
-    /// Encode the given character into the bitstream, return the number of bits written
+    /// Encode the given character into the bitstream
     pub fn encode_char<W: Write>(&self, writer: &mut BitWriter<W, LittleEndian>, character: u16) -> Result<(), Box<dyn Error>> {
         match self.dict.get(&character) {
             Some(code) => {
