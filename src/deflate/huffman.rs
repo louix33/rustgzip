@@ -28,16 +28,18 @@ lazy_static! {
         }
         bits
     };
+    
+    static ref FIXED_LITERAL_CODES: HuffmanCodes = HuffmanCodes::build_from_bitlen(&*FIXED_HUFFMAN_BITS).unwrap();
 
-    static ref FIXED_LITERAL_TREE: HuffmanTree = HuffmanTree::build_canonical_from_bitlen(&*FIXED_HUFFMAN_BITS).unwrap();
+    static ref FIXED_LITERAL_TREE: HuffmanTree = HuffmanTree::build_from_codes(&*FIXED_LITERAL_CODES).unwrap();
 }
 
 
-struct HuffmanDict {
+struct HuffmanCodes {
     pub dict: HashMap<u16, Vec<bool>>
 }
 
-impl HuffmanDict {
+impl HuffmanCodes {
     pub fn build_from_tree(tree: &HuffmanTree) -> Self {
         unimplemented!()
     }
@@ -60,7 +62,7 @@ impl HuffmanDict {
         }
 
         // Step 3: Assign numerical values to all codes, using consecutive values for all codes of the same length with the base values determined at step 2
-        let mut code_dict = HuffmanDict {
+        let mut code_dict = HuffmanCodes {
             dict: HashMap::new()
         };
         for (symbol, &bits) in bitlen.iter().enumerate() {
@@ -164,19 +166,19 @@ impl HuffmanTree {
 
         unimplemented!();
 
-        Self::build_canonical_from_bitlen(&bitlen)
+        Self::build_from_bitlen(&bitlen)
     }
 
     /// Build a canonical huffman tree using given bit lengths. The algorithm is described in RFC 1951, Section 3.2.2.
     /// Assume that the symbols in the alphabet begin from 0 and grow consecutively.
     /// For example, `bitlen[3] == 2` means that the symbol 3 is encoded using 2 bits. 
-    pub fn build_canonical_from_bitlen(bitlen: &[u32]) -> Result<Self, DecodeError> {
-        Self::build_from_codes(&HuffmanDict::build_from_bitlen(bitlen)?)
+    pub fn build_from_bitlen(bitlen: &[u32]) -> Result<Self, DecodeError> {
+        Self::build_from_codes(&HuffmanCodes::build_from_bitlen(bitlen)?)
     }
 
     /// Build a huffman tree from given huffman codes.
     /// Return None if the codes cannot generate a legal huffman tree
-    fn build_from_codes(codes: &HuffmanDict) -> Result<Self, DecodeError> {
+    fn build_from_codes(codes: &HuffmanCodes) -> Result<Self, DecodeError> {
         let mut tree = HuffmanTree::new(None);
         for (symbol, code) in &codes.dict {
             let mut cur = &mut tree;
