@@ -99,17 +99,15 @@ impl HuffmanDict {
 
 struct HuffmanTree {
     character: Option<u16>, // 0-285
-    frequency: u32,
     left: Option<Box<HuffmanTree>>,
     right: Option<Box<HuffmanTree>>
 }
 
 impl HuffmanTree {
     /// Create a new huffman tree node with no children
-    pub fn new(character: Option<u16>, frequency: u32) -> Self {
+    pub fn new(character: Option<u16>) -> Self {
         HuffmanTree {
             character,
-            frequency,
             left: None,
             right: None,
         }
@@ -122,6 +120,7 @@ impl HuffmanTree {
     /// Build a huffman tree using given freqencies, NOT guaranteeing that the tree is canonical.
     /// Assume that the symbols in the alphabet begin from 0 and grow consecutively.
     /// Return the root node, or None if the frequency array is empty
+    /*
     pub fn build_from_freq(frequencies: &[u32]) -> Option<Self> {
         let mut nodes: Vec<HuffmanTree> = frequencies
             .iter().enumerate()
@@ -146,6 +145,8 @@ impl HuffmanTree {
     
         nodes.pop()
     }
+    */
+    
 
     /// Build a canonical, length-limited huffman tree using given symbol freqencies.
     /// Assume that the symbols in the alphabet begin from 0 and grow consecutively.
@@ -176,7 +177,7 @@ impl HuffmanTree {
     /// Build a huffman tree from given huffman codes.
     /// Return None if the codes cannot generate a legal huffman tree
     fn build_from_codes(codes: &HuffmanDict) -> Result<Self, DecodeError> {
-        let mut tree = HuffmanTree::new(None, 0);
+        let mut tree = HuffmanTree::new(None);
         for (symbol, code) in &codes.dict {
             let mut cur = &mut tree;
 
@@ -184,13 +185,13 @@ impl HuffmanTree {
                 match bit {
                     false => { // go to the left
                         if cur.left.is_none() {
-                            cur.left = Some(Box::new(HuffmanTree::new(None, 0)));
+                            cur.left = Some(Box::new(HuffmanTree::new(None)));
                         }
                         cur = cur.left.as_mut().unwrap();
                     },
                     true => { // go to the right
                         if cur.right.is_none() {
-                            cur.right = Some(Box::new(HuffmanTree::new(None, 0)));
+                            cur.right = Some(Box::new(HuffmanTree::new(None)));
                         }
                         cur = cur.right.as_mut().unwrap();
                     }
