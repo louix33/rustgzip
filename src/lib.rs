@@ -1,1 +1,2 @@
-pub mod deflate;
+mod deflate;
+mod error;
