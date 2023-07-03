@@ -75,13 +75,13 @@ impl HuffmanDict {
     }
 
     /// Encode the given character into the bitstream, return the number of bits written
-    pub fn encode_char<W: Write>(&self, writer: &mut BitWriter<W, LittleEndian>, character: u16) -> Result<u32, Box<dyn Error>> {
+    pub fn encode_char<W: Write>(&self, writer: &mut BitWriter<W, LittleEndian>, character: u16) -> Result<(), Box<dyn Error>> {
         match self.dict.get(&character) {
             Some(code) => {
                 for bit in code {
                     writer.write_bit(*bit)?;
                 }
-                Ok(code.len() as u32)
+                Ok(())
             },
             None => Err(Box::new(EncodeError::from("failed when encoding huffman: character not found in alphabet")))
         }
