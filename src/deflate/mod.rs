@@ -3,12 +3,11 @@ mod huffman;
 
 use core::panic;
 use std::error::Error;
-use std::fs::File;
-use std::io::{BufReader, BufWriter, Read, Write};
+use std::io::BufReader;
 
 use bitstream_io::{BitWriter, BitWrite, LittleEndian};
 
-use lz77::{Symbol, Lz77Status, WINDOW_SIZE, LOOKAHEAD_SIZE};
+use lz77::{Lz77Status, WINDOW_SIZE, LOOKAHEAD_SIZE};
 use lz77::encode::lz77_encode_block;
 use huffman::encode::huffman_encode_block;
 use crate::circular_buf::CircularBuf;
