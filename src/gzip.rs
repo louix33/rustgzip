@@ -15,7 +15,6 @@ pub fn compress_to_gzip(src_path: &str, dst_path: &str) -> Result<(), Box<dyn Er
 
     let mut writer = BufWriter::new(dst_file);
 
-    // write gzip header
     writer.write_all(&[0x1f, 0x8b, // fixed values
                        0x08, // compression method: deflate
                        0x08, // flags, FNAME set

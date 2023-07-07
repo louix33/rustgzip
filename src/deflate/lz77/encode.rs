@@ -5,7 +5,7 @@ use super::Lz77Status;
 use crate::circular_buf::CircularBuf;
 
 /// Encode the input data using lz77 algorithm
-pub(crate) fn lz77_encode_block<R: BufRead>(reader: &mut R, window: &mut CircularBuf<u8>, lookahead: &mut CircularBuf<u8>, blksize: usize) -> Result<Lz77Status, Box::<dyn Error>> {
+pub(crate) fn lz77_encode_block<R: BufRead>(reader: &mut R, search: &mut CircularBuf<u8>, lookahead: &mut CircularBuf<u8>, blksize: usize) -> Result<Lz77Status, Box::<dyn Error>> {
     let mut output = Vec::new();
 
     let mut ended = false;
@@ -31,20 +31,20 @@ pub(crate) fn lz77_encode_block<R: BufRead>(reader: &mut R, window: &mut Circula
             break;
         }
 
-        match longest_match(&window, &lookahead) {
+        match longest_match(&search, &lookahead) {
             Some((length, distance)) => {
                 // Found a match
                 assert!(length >= 3 && length <= 258);
                 output.push(Symbol::Pointer { length: (length - 3) as u8, distance: distance as u16 });
                 for _ in 0..length {
-                    window.push_back(lookahead.pop_front().unwrap());
+                    search.push_back(lookahead.pop_front().unwrap());
                 }
             },
             None => {
                 // No match found
                 let c = lookahead.pop_front().unwrap();
                 output.push(Symbol::Literal(c));
-                window.push_back(c);
+                search.push_back(c);
             }
         }
 

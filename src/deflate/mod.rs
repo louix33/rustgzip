@@ -24,12 +24,12 @@ pub fn deflate(src: &[u8]) -> Result<Vec<u8>, Box<dyn Error>> {
     let mut reader = BufReader::new(src);
 
     let mut blocks = Vec::new();
-    let mut window = CircularBuf::with_capacity(WINDOW_SIZE);
+    let mut search = CircularBuf::with_capacity(WINDOW_SIZE);
     let mut lookahead = CircularBuf::with_capacity(LOOKAHEAD_SIZE);
 
 
     loop {
-        match lz77_encode_block(&mut reader, &mut window, &mut lookahead, BLKSIZE)? {
+        match lz77_encode_block(&mut reader, &mut search, &mut lookahead, BLKSIZE)? {
             Lz77Status::Normal(block) => {
                 blocks.push(huffman_encode_block(&block)?);
             }
