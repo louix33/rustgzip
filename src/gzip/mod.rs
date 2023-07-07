@@ -1,12 +1,12 @@
 use std::error::Error;
 use std::fs::File;
-use std::io::{Read, Write, BufReader, BufWriter};
+use std::io::{Read, Write, BufWriter};
 use crate::deflate::deflate;
 use std::time::SystemTime;
 
 pub fn compress_to_gzip(src_path: &str, dst_path: &str) -> Result<(), Box<dyn Error>> {
     let mut src_file = File::open(src_path)?;
-    let mut dst_file = File::create(dst_path)?;
+    let dst_file = File::create(dst_path)?;
 
     let mut raw_data = Vec::new();
     src_file.read_to_end(&mut raw_data)?;

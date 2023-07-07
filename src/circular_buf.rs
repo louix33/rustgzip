@@ -79,10 +79,6 @@ impl<T: Default+Clone> CircularBuf<T> {
         self.length == self.buffer.len()
     }
 
-    pub fn clear(&mut self) {
-        self.length = 0;
-    }
-
     pub fn is_empty(&self) -> bool {
         self.length == 0
     }

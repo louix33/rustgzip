@@ -1,7 +1,6 @@
 pub(super) mod encode;
 
 use std::fmt::Display;
-use std::io::Read;
 
 pub(super) const WINDOW_SIZE: usize = 32768;
 pub(super) const LOOKAHEAD_SIZE: usize = 258;
@@ -33,6 +32,7 @@ pub(crate) enum Lz77Status {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Read;
 
     #[test]
     fn test_symbol_display() {
