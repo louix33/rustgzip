@@ -1,4 +1,4 @@
-use std::ops::{Index, IndexMut};
+use std::ops::Index;
 
 pub(crate) struct CircularBuf<T: Default+Clone> {
     buffer: Vec<T>,
@@ -11,12 +11,6 @@ impl<T: Default+Clone> Index<usize> for CircularBuf<T> {
 
     fn index(&self, index: usize) -> &Self::Output {
         &self.buffer[(self.start + index) % self.buffer.len()]
-    }
-}
-
-impl<T: Default+Clone> IndexMut<usize> for CircularBuf<T> {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.buffer[(self.start + index) % self.buffer.len()]
     }
 }
 
@@ -58,6 +52,23 @@ impl<T: Default+Clone> CircularBuf<T> {
 
     pub fn len(&self) -> usize {
         self.length
+    }
+
+    pub fn front_mut(&mut self) -> Option<&mut T> {
+        if self.length == 0 {
+            None
+        } else {
+            Some(&mut self.buffer[self.start])
+        }
+    }
+
+    pub fn back_mut(&mut self) -> Option<&mut T> {
+        if self.length == 0 {
+            None
+        } else {
+            let idx = (self.start + self.length - 1) % self.buffer.len();
+            Some(&mut self.buffer[idx])
+        }
     }
 
     pub fn capacity(&self) -> usize {
