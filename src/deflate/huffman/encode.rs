@@ -1,7 +1,5 @@
 use bitstream_io::{BitWriter, BitWrite, LittleEndian};
 use std::error::Error;
-use std::{io::Write};
-use crate::error::*;
 use crate::deflate::lz77::Symbol;
 use super::{HuffmanCodes};
 use super::{MAX_BITS, FIXED_LITERAL_CODES, LENGTH_REPR, DIST_REPR};
