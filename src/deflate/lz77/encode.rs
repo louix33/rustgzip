@@ -35,7 +35,7 @@ pub(crate) fn lz77_encode_block<R: BufRead>(reader: &mut R, window: &mut Circula
             Some((length, distance)) => {
                 // Found a match
                 assert!(length >= 3 && length <= 258);
-                output.push(Symbol::Pointer { length: length as u8 - 3, distance: distance as u16 });
+                output.push(Symbol::Pointer { length: (length - 3) as u8, distance: distance as u16 });
                 for _ in 0..length {
                     window.push_back(lookahead.pop_front().unwrap());
                 }

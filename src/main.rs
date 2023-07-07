@@ -12,5 +12,5 @@ struct Cli {
 }
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
-    rustgzip::compress_to_gzip(&args.input, &args.output.unwrap_or("a.out".to_string()))
+    rustgzip::compress_to_gzip(&args.input, &args.output.unwrap_or(args.input.clone() + ".gz"))
 }
