@@ -1,37 +1,59 @@
-pub(crate) struct CircularBuf<T> {
+use std::ops::{Index, IndexMut};
+
+pub(crate) struct CircularBuf<T: Default+Clone> {
     buffer: Vec<T>,
     start: usize,
     length: usize,
 }
 
-impl<T> CircularBuf<T> {
+impl<T: Default+Clone> Index<usize> for CircularBuf<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.buffer[(self.start + index) % self.buffer.len()]
+    }
+}
+
+impl<T: Default+Clone> IndexMut<usize> for CircularBuf<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.buffer[(self.start + index) % self.buffer.len()]
+    }
+}
+
+impl<T: Default+Clone> CircularBuf<T> {
     pub fn with_capacity(size: usize) -> Self {
         CircularBuf {
-            buffer: Vec::with_capacity(size),
+            buffer: vec![Default::default(); size],
             start: 0,
             length: 0,
         }
     }
 
-    pub fn push(&mut self, item: T) {
-        let n = self.buffer.len();
-        let idx = (self.start + self.length) % n;
-        self.buffer[idx] = item;
+    /// Push an item to the end of the buffer. If the buffer is full, the oldest item will be replaced and returned.
+    pub fn push_back(&mut self, item: T) -> Option<T> {
+        let capacity = self.buffer.len();
+        let idx = (self.start + self.length) % capacity;
 
-        if self.length < n {
+        if self.length < capacity {
             self.length += 1;
+            self.buffer[idx] = item;
+            None
         } else {
-            self.start = (self.start + 1) % n;
+            self.start = (self.start + 1) % capacity;
+            Some(std::mem::replace(&mut self.buffer[idx], item))
         }
     }
 
-    pub fn get(&self, index: usize) -> Option<&T> {
-        if index >= self.length {
+    /// Pop an item from the front of the buffer. If the buffer is empty, None will be returned.
+    pub fn pop_front(&mut self) -> Option<T> {
+        if self.length == 0 {
             return None;
         }
 
-        let idx = (self.start + index) % self.buffer.len();
-        Some(&self.buffer[idx])
+        let idx = self.start;
+        self.start = (self.start + 1) % self.buffer.len();
+        self.length -= 1;
+        Some(std::mem::replace(&mut self.buffer[idx], Default::default()))
     }
 
     pub fn len(&self) -> usize {
@@ -39,23 +61,18 @@ impl<T> CircularBuf<T> {
     }
 
     pub fn capacity(&self) -> usize {
-        self.buffer.capacity()
+        self.buffer.len()
     }
 
-    pub fn full(&self) -> bool {
+    pub fn is_full(&self) -> bool {
         self.length == self.buffer.len()
     }
 
     pub fn clear(&mut self) {
-        self.start = 0;
         self.length = 0;
     }
 
-    pub fn empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.length == 0
-    }
-
-    pub fn buffer(&self) -> &[T] {
-        &self.buffer
     }
 }
